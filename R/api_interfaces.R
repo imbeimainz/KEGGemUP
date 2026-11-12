@@ -269,6 +269,85 @@ get_kegg_db <- function(db_name = "compound",
   return(kegg_db)
 }
 
+
+
+#' Download and cache a KEGG resource
+#'
+#' Downloads a KEGG resource using httr2 and stores it locally
+#' using BiocFileCache.
+#'
+#' The reason for this helper - and reimplementation: `bfcrpath` is requesting
+#' SHA256 to be available, and the REST API from KEGG is not exposing them
+#'
+#' @param url URL of the KEGG resource
+#' @param bfc BiocFileCache object
+#' @param ext File extension
+#' @param verbose Logical
+#'
+#' @return Path to the cached resource
+#'
+#' @importFrom BiocFileCache bfcquery bfcpath bfcremove bfcadd
+#' @importFrom httr2 resp_body_raw
+#'
+#' @noRd
+cache_kegg_resource <- function(url, bfc, ext, verbose = FALSE) {
+
+  # Look for an existing resource
+  cached <- BiocFileCache::bfcquery(
+    bfc,
+    url,
+    field = "rname",
+    exact = TRUE
+  )
+
+  # Return existing file if available
+  if (nrow(cached) > 0L) {
+
+    if (nrow(cached) > 1L) {
+      stop("Multiple cache entries found for: ", url)
+    }
+
+    cached_path <- BiocFileCache::bfcpath(
+      bfc,
+      rids = cached$rid
+    )
+
+    if (file.exists(cached_path)) {
+      if (verbose) message("Using cached resource: ", url)
+      return(unname(cached_path))
+    }
+
+    # Else, remove stale cache entry
+    BiocFileCache::bfcremove(bfc, cached$rid)
+  }
+
+  if (verbose) message("Downloading resource: ", url)
+
+  # Download using httr2
+  resp <- make_request(url)
+
+  # Write response to temporary file
+  tmp <- tempfile(fileext = ext)
+  on.exit(unlink(tmp), add = TRUE)
+
+  writeBin(httr2::resp_body_raw(resp), tmp)
+
+  # Register the local file in BiocFileCache (replaces the old principle via bfcrpath)
+  cached_path <- BiocFileCache::bfcadd(
+    bfc,
+    rname = url,
+    fpath = tmp,
+    rtype = "local",
+    action = "copy",
+    ext = ext
+  )
+
+  if (verbose) message("Cached resource: ", url)
+
+  return(unname(cached_path))
+}
+
+
 # cache management --------------------------------------------------------
 
 #' Return all cached KEGGemUP information
