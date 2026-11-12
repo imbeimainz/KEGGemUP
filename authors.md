@@ -22,13 +22,13 @@ Source:
 [`DESCRIPTION`](https://github.com/imbeimainz/KEGGemUP/blob/devel/DESCRIPTION)
 
 Filippi E, Marini F (2026). *KEGGemUP: Creating, Rendering, and Mapping
-Omics Data on KEGG Pathway Graphs*. R package version 0.99.1,
+Omics Data on KEGG Pathway Graphs*. R package version 0.99.2,
 <https://github.com/imbeimainz/KEGGemUP>.
 
     @Manual{,
       title = {KEGGemUP: Creating, Rendering, and Mapping Omics Data on KEGG Pathway Graphs},
       author = {Edoardo Filippi and Federico Marini},
       year = {2026},
-      note = {R package version 0.99.1},
+      note = {R package version 0.99.2},
       url = {https://github.com/imbeimainz/KEGGemUP},
     }
