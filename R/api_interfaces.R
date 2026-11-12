@@ -249,12 +249,6 @@ get_kegg_db <- function(db_name = "compound",
       file_name <- path
     }
 
-    # file_name <-
-    #   if (grepl("\\.[^/\\\\]+$", path)) {
-    #     path
-    #   } else {
-    #     file.path(path.expand(path), paste0("kegg_", db_name, ".tsv"))
-    #   }
     write.table(
       kegg_db,
       file = file_name,
