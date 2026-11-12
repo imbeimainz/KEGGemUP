@@ -49,8 +49,13 @@ retrieve_kgml <- function(pathway_id,
   if (verbose) message("Downloading KGML from: ", url)
 
   if (mode == "cache") {
-    cached_path <- BiocFileCache::bfcrpath(bfc, url, ext = ".xml")
-    if (verbose) message("Cached: ", pathway_id)
+    cached_path <- cache_kegg_resource(
+      url = url,
+      bfc = bfc,
+      ext = ".xml",
+      verbose = verbose
+    )
+
     return(cached_path)
   }
 
@@ -211,9 +216,15 @@ get_kegg_db <- function(db_name = "compound",
 
   # If using cache, check if the file is already cached and return the path, in this case I will read the file and return the data frame
   if (mode == "cache") {
-    path <- BiocFileCache::bfcrpath(bfc, url, ext = ".tsv")
-    if (verbose) message("Cached KEGG database: ", db_name)
+    path <- cache_kegg_resource(
+      url = url,
+      bfc = bfc,
+      ext = ".tsv",
+      verbose = verbose
+    )
+
     con <- path
+
   } else {
     resp <- make_request(url)
     con <- textConnection(httr2::resp_body_string(resp))
