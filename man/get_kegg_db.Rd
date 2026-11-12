@@ -37,7 +37,7 @@ kegg_compounds <- get_kegg_db(
   path = data_dir, verbose = TRUE
 )
 
-# Just returning without saving
+# Just returning without saving in a cache/in a stored object on disk
 kegg_compounds_onthefly <- get_kegg_db(
   db_name = "compound",
   verbose = TRUE
@@ -45,9 +45,9 @@ kegg_compounds_onthefly <- get_kegg_db(
 head(kegg_compounds_onthefly)
 
 # saving to cache (in a temp dir)
-kegg_compounds_cached <- get_kegg_db(
-  db_name = "compound",
-  bfc = BiocFileCache::BiocFileCache(tempdir()),
+kegg_glycans_cached <- get_kegg_db(
+  db_name = "glycan",
+  bfc = BiocFileCache::BiocFileCache(data_dir),
   verbose = TRUE
 )
 }
