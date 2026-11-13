@@ -49,8 +49,13 @@ retrieve_kgml <- function(pathway_id,
   if (verbose) message("Downloading KGML from: ", url)
 
   if (mode == "cache") {
-    cached_path <- BiocFileCache::bfcrpath(bfc, url, ext = ".xml")
-    if (verbose) message("Cached: ", pathway_id)
+    cached_path <- cache_kegg_resource(
+      url = url,
+      bfc = bfc,
+      ext = ".xml",
+      verbose = verbose
+    )
+
     return(cached_path)
   }
 
@@ -187,7 +192,7 @@ retrieve_all_pathways <- function(org,
 #'   path = data_dir, verbose = TRUE
 #' )
 #'
-#' # Just returning without saving
+#' # Just returning without saving in a cache/in a stored object on disk
 #' kegg_compounds_onthefly <- get_kegg_db(
 #'   db_name = "compound",
 #'   verbose = TRUE
@@ -195,9 +200,9 @@ retrieve_all_pathways <- function(org,
 #' head(kegg_compounds_onthefly)
 #'
 #' # saving to cache (in a temp dir)
-#' kegg_compounds_cached <- get_kegg_db(
-#'   db_name = "compound",
-#'   bfc = BiocFileCache::BiocFileCache(tempdir()),
+#' kegg_glycans_cached <- get_kegg_db(
+#'   db_name = "glycan",
+#'   bfc = BiocFileCache::BiocFileCache(data_dir),
 #'   verbose = TRUE
 #' )
 get_kegg_db <- function(db_name = "compound",
@@ -211,9 +216,15 @@ get_kegg_db <- function(db_name = "compound",
 
   # If using cache, check if the file is already cached and return the path, in this case I will read the file and return the data frame
   if (mode == "cache") {
-    path <- BiocFileCache::bfcrpath(bfc, url, ext = ".tsv")
-    if (verbose) message("Cached KEGG database: ", db_name)
+    path <- cache_kegg_resource(
+      url = url,
+      bfc = bfc,
+      ext = ".tsv",
+      verbose = verbose
+    )
+
     con <- path
+
   } else {
     resp <- make_request(url)
     con <- textConnection(httr2::resp_body_string(resp))
@@ -238,12 +249,6 @@ get_kegg_db <- function(db_name = "compound",
       file_name <- path
     }
 
-    # file_name <-
-    #   if (grepl("\\.[^/\\\\]+$", path)) {
-    #     path
-    #   } else {
-    #     file.path(path.expand(path), paste0("kegg_", db_name, ".tsv"))
-    #   }
     write.table(
       kegg_db,
       file = file_name,
@@ -257,6 +262,85 @@ get_kegg_db <- function(db_name = "compound",
 
   return(kegg_db)
 }
+
+
+
+#' Download and cache a KEGG resource
+#'
+#' Downloads a KEGG resource using httr2 and stores it locally
+#' using BiocFileCache.
+#'
+#' The reason for this helper - and reimplementation: `bfcrpath` is requesting
+#' SHA256 to be available, and the REST API from KEGG is not exposing them
+#'
+#' @param url URL of the KEGG resource
+#' @param bfc BiocFileCache object
+#' @param ext File extension
+#' @param verbose Logical
+#'
+#' @return Path to the cached resource
+#'
+#' @importFrom BiocFileCache bfcquery bfcpath bfcremove bfcadd
+#' @importFrom httr2 resp_body_raw
+#'
+#' @noRd
+cache_kegg_resource <- function(url, bfc, ext, verbose = FALSE) {
+
+  # Look for an existing resource
+  cached <- BiocFileCache::bfcquery(
+    bfc,
+    url,
+    field = "rname",
+    exact = TRUE
+  )
+
+  # Return existing file if available
+  if (nrow(cached) > 0L) {
+
+    if (nrow(cached) > 1L) {
+      stop("Multiple cache entries found for: ", url)
+    }
+
+    cached_path <- BiocFileCache::bfcpath(
+      bfc,
+      rids = cached$rid
+    )
+
+    if (file.exists(cached_path)) {
+      if (verbose) message("Using cached resource: ", url)
+      return(unname(cached_path))
+    }
+
+    # Else, remove stale cache entry
+    BiocFileCache::bfcremove(bfc, cached$rid)
+  }
+
+  if (verbose) message("Downloading resource: ", url)
+
+  # Download using httr2
+  resp <- make_request(url)
+
+  # Write response to temporary file
+  tmp <- tempfile(fileext = ext)
+  on.exit(unlink(tmp), add = TRUE)
+
+  writeBin(httr2::resp_body_raw(resp), tmp)
+
+  # Register the local file in BiocFileCache (replaces the old principle via bfcrpath)
+  cached_path <- BiocFileCache::bfcadd(
+    bfc,
+    rname = url,
+    fpath = tmp,
+    rtype = "local",
+    action = "copy",
+    ext = ext
+  )
+
+  if (verbose) message("Cached resource: ", url)
+
+  return(unname(cached_path))
+}
+
 
 # cache management --------------------------------------------------------
 

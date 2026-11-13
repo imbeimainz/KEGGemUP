@@ -68,7 +68,7 @@ test_that("retrieve_kgml works in cache mode", {
   ))
 
   fake_path <- BiocFileCache::bfcrpath(bfc, "https://rest.kegg.jp/get/hsa00010/kgml")  # Changed to a real pathway ID
-  expect_equal(result, fake_path)
+  expect_equal(result, unname(fake_path))
 })
 
 test_that("get_kegg_db rejects invalid inputs", {
