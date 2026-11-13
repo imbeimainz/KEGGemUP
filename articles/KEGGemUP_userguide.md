@@ -1,6 +1,6 @@
 # The \`KEGGemUP\` User's Guide
 
-**Compiled date**: 2026-11-12
+**Compiled date**: 2026-11-13
 
 **Last edited**: 2026-04-24
 
@@ -151,7 +151,7 @@ kmu_graph <- create_kegg_graph(pathway_id = "hsa00563")
 #> adding rname 'https://rest.kegg.jp/get/hsa00563/kgml'
 
 kmu_graph
-#> IGRAPH 19ffcb3 DN-B 147 384 -- 
+#> IGRAPH 58d66f6 DN-B 147 384 -- 
 #> + attr: title (g/c), type (g/c), name (v/c), type (v/c), link (v/c),
 #> | reaction (v/c), reaction_link (v/c), reaction_label (v/c),
 #> | graphics_name (v/c), node_name (v/c), KEGG (v/c), components (v/c),
@@ -168,7 +168,7 @@ kmu_graph
 #> | (e/c), width (e/n), value (e/n), label (e/c), lty (e/n), arrow.mode
 #> | (e/c), dashes (e/l), title (e/c), font.face (e/c), borderWidth (e/n),
 #> | borderWidthSelected (e/n), from (e/c), to (e/c)
-#> + edges from 19ffcb3 (vertex names):
+#> + edges from 58d66f6 (vertex names):
 ```
 
 While one can directly use the `plot` routine to visualize this graph,
@@ -431,7 +431,7 @@ files, where all the info on nodes and edges are written.
 
 file_prefix <- tempfile()
 export_kegg_graph(g = kmu_cellcycle_highlighted, basename = file_prefix)
-#> Exported graph components in /tmp/Rtmpmsl2f5/file1ed3267b96f7_nodes.tsv and /tmp/Rtmpmsl2f5/file1ed3267b96f7_edges.tsv
+#> Exported graph components in /tmp/RtmpbvU9RX/file1a8b4cf91fe3_nodes.tsv and /tmp/RtmpbvU9RX/file1a8b4cf91fe3_edges.tsv
 ```
 
 Alternatively, the `igraph` objects can also be directly sent to
@@ -469,13 +469,13 @@ specified in the `org` parameter with a KEGG organism code, such as
 
 local_kgml_file <- retrieve_kgml(pathway_id = "hsa04110", path = tempdir())
 local_kgml_file
-#> [1] "/tmp/Rtmpmsl2f5/hsa04110.xml"
+#> [1] "/tmp/RtmpbvU9RX/hsa04110.xml"
 
 graph_parsed <- create_kegg_graph(pathway_id = "local_kgml", kgml_file = local_kgml_file)
 #> Warning in value[[3L]](cond): Could not retrieve pathway name for ID:
 #> local_kgml
 graph_parsed
-#> IGRAPH 0f73ada DN-B 134 119 -- 
+#> IGRAPH 9c62929 DN-B 134 119 -- 
 #> + attr: title (g/c), type (g/c), name (v/c), type (v/c), link (v/c),
 #> | reaction (v/c), reaction_link (v/c), reaction_label (v/c),
 #> | graphics_name (v/c), node_name (v/c), KEGG (v/c), components (v/c),
@@ -492,7 +492,7 @@ graph_parsed
 #> | (e/c), width (e/n), value (e/n), label (e/c), lty (e/n), arrow.mode
 #> | (e/c), dashes (e/l), title (e/c), font.face (e/c), borderWidth (e/n),
 #> | borderWidthSelected (e/n), from (e/c), to (e/c)
-#> + edges from 0f73ada (vertex names):
+#> + edges from 9c62929 (vertex names):
 
 cpd_db <- get_kegg_db(db_name = "compound", path = tempdir())
 head(cpd_db)
@@ -527,20 +527,20 @@ head(kmu_cached)
 #> # A tibble: 3 × 10
 #>   rid   rname create_time access_time rpath rtype fpath last_modified_time etag 
 #>   <chr> <chr> <chr>       <chr>       <chr> <chr> <chr>              <dbl> <chr>
-#> 1 BFC1  http… 2026-11-12… 2026-11-12… /hom… web   http…                 NA NA   
-#> 2 BFC2  http… 2026-11-12… 2026-11-12… /hom… web   http…                 NA NA   
-#> 3 BFC3  http… 2026-11-12… 2026-11-12… /hom… web   http…                 NA NA   
+#> 1 BFC1  http… 2026-11-13… 2026-11-13… /hom… web   http…                 NA NA   
+#> 2 BFC2  http… 2026-11-13… 2026-11-13… /hom… web   http…                 NA NA   
+#> 3 BFC3  http… 2026-11-13… 2026-11-13… /hom… web   http…                 NA NA   
 #> # ℹ 1 more variable: expires <dbl>
 #> 
 #> $mappings
 #> # A tibble: 5 × 10
 #>   rid   rname create_time access_time rpath rtype fpath last_modified_time etag 
 #>   <chr> <chr> <chr>       <chr>       <chr> <chr> <chr>              <dbl> <chr>
-#> 1 BFC1  http… 2026-11-12… 2026-11-12… /hom… web   http…                 NA NA   
-#> 2 BFC2  http… 2026-11-12… 2026-11-12… /hom… web   http…                 NA NA   
-#> 3 BFC3  http… 2026-11-12… 2026-11-12… /hom… web   http…                 NA NA   
-#> 4 BFC4  http… 2026-11-12… 2026-11-12… /hom… web   http…                 NA NA   
-#> 5 BFC5  http… 2026-11-12… 2026-11-12… /hom… web   http…                 NA NA   
+#> 1 BFC1  http… 2026-11-13… 2026-11-13… /hom… web   http…                 NA NA   
+#> 2 BFC2  http… 2026-11-13… 2026-11-13… /hom… web   http…                 NA NA   
+#> 3 BFC3  http… 2026-11-13… 2026-11-13… /hom… web   http…                 NA NA   
+#> 4 BFC4  http… 2026-11-13… 2026-11-13… /hom… web   http…                 NA NA   
+#> 5 BFC5  http… 2026-11-13… 2026-11-13… /hom… web   http…                 NA NA   
 #> # ℹ 1 more variable: expires <dbl>
 ```
 

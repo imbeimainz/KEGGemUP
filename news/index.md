@@ -1,5 +1,9 @@
 # Changelog
 
+## KEGGemUP 0.99.2
+
+- Updating documentation to conform to the latest roxygen versions
+
 ## KEGGemUP 0.99.1
 
 - Finalized some changes upon the Bioconductor package reviewing process
